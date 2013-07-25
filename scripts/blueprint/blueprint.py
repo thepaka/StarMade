@@ -5,6 +5,7 @@ import struct
 import time
 import zlib
 import re
+import cStringIO
 
 from sets import Set
 
@@ -43,9 +44,39 @@ def readBlueprint(dirName):
     
     return data
 
+def writeBlueprint(dirName, data):
+
+    if os.path.exists(dirName):
+        raise Exception('%s already exists' % dirName)
+    
+    os.mkdir(dirName)
+    
+    writeHeaderFile('%s/header.smbph' % dirName, data['header'])
+    writeLogicFile('%s/logic.smbpl' % dirName, data['logic'])
+    writeMetaFile('%s/meta.smbpm' % dirName, data['meta'])
+    
+    dataDir = '%s/DATA' % dirName
+    os.mkdir(dataDir)
+    
+    for df in data['datas']:
+        writeDataFile('%s/%s' % (dataDir, df), data['datas'][df])
+
 def printBlueprint(dirName):
     pprint.pprint(readBlueprint(dirName))
     
+def testWrites(dirName):
+
+    data = readBlueprint(dirName)
+    writeBlueprint("output", data)
+    data2 = readBlueprint("output")
+    
+    f=open('test-data', 'w')
+    pprint.pprint(data, f)
+    f.close()
+    f=open('test-data2', 'w')
+    pprint.pprint(data2, f)
+    f.close()
+
 def readHeaderFile(fileName):
     '''
     Read a blueprint header file (.smbph)
@@ -68,6 +99,8 @@ def readHeaderFile(fileName):
     retval = {}
     
     with open(fileName, 'rb') as f:
+        print 'Parsing %s' % fileName
+        
         bs = binary.BinaryStream(f)
         
         retval['int_a'] = bs.readInt32()
@@ -89,6 +122,33 @@ def readHeaderFile(fileName):
             print 'Warning: EOF not reached'
 
     return retval
+
+def writeHeaderFile(fileName, data):
+
+    with open(fileName, 'wb') as f:
+        print 'Writing %s' % fileName
+        
+        bs = binary.BinaryStream(f)
+        
+        bs.writeInt32(data['int_a'])
+        bs.writeInt32(data['int_b'])
+        
+        bs.writeFloat(data['bounds_a'][0])
+        bs.writeFloat(data['bounds_a'][1])
+        bs.writeFloat(data['bounds_a'][2])
+        
+        bs.writeFloat(data['bounds_b'][0])
+        bs.writeFloat(data['bounds_b'][1])
+        bs.writeFloat(data['bounds_b'][2])
+        
+        blockTableLen = len(data['blocks'])
+        bs.writeInt32(blockTableLen)
+        
+        for i in sorted(data['blocks'].items(), key=lambda b: b[0]):
+            bs.writeInt16(i[0])
+            bs.writeInt32(i[1])
+        
+        f.close()
 
 def readLogicFile(fileName):
     '''
@@ -171,6 +231,38 @@ def readLogicFile(fileName):
     
     return retval
     
+def writeLogicFile(fileName, data):
+
+    with open(fileName, 'wb') as f:
+        print 'Writing %s' % fileName
+        
+        bs = binary.BinaryStream(f)
+        
+        bs.writeInt32(data['int_a'])
+        numControls = len(data['controllers'])
+        bs.writeInt32(numControls)
+        
+        for d_ctrl in data['controllers']:
+            
+            bs.writeInt16(d_ctrl['pos'][0])
+            bs.writeInt16(d_ctrl['pos'][1])
+            bs.writeInt16(d_ctrl['pos'][2])
+            
+            bs.writeInt32(len(d_ctrl['q']))
+            
+            for tag in d_ctrl['q']:
+                ctrl_grp = d_ctrl['q'][tag]
+                
+                bs.writeInt16(tag)
+                bs.writeInt32(len(ctrl_grp))
+                
+                for pos in ctrl_grp:
+                    bs.writeInt16(pos[0])
+                    bs.writeInt16(pos[1])
+                    bs.writeInt16(pos[2])
+        
+        f.close()
+
 def parseEntity(bs):
     TAG_BYTE = 0x1
     TAG_SHORT = 0x2
@@ -333,6 +425,52 @@ def readMetaFile(fileName):
     
     return retval
 
+def writeMetaFile(fileName, data):
+
+    with open(fileName, 'wb') as f:
+        print 'Writing %s' % fileName
+        
+        bs = binary.BinaryStream(f)
+        
+        '''
+        TODO
+        
+        bs.writeInt32(data['int_a'])
+        bs.writeChar(data['byte_a'])
+        
+        if data['byte_a'] == 3:
+            numDocked = len(data['docked'])
+            bs.writeInt32(numDocked)
+            
+            for i in range(0, numDocked):
+                d = data['docked'][i]
+                
+                bs.writeString = d['name']
+                
+                bs.writeInt32( d['q'][0] )
+                bs.writeInt32( d['q'][1] )
+                bs.writeInt32( d['q'][2] )
+                
+                bs.writeFloat( d['a'][0] )
+                bs.writeFloat( d['a'][1] )
+                bs.writeFloat( d['a'][2] )
+                
+                bs.writeInt16( d['dockID'])
+                bs.writeChar(0)
+            
+            bs.writeChar(data['byte_b'])
+            
+            writeEntity(bs, data)
+        '''
+        
+        import base64
+        default_meta = "AAAAAAMAAAAAAgAADQAJY29udGFpbmVyDQATY29udHJvbGxlclN0cnVjdHVyZQANAAhzaGlwTWFu"\
+                       "MA0ACHdlcENvbnRyAA0ACHdlcENvbnRyAA0ACHdlcENvbnRyAA0ACHdlcENvbnRyAAAGAAJwd0DT"\
+                       "iAAAAAAABgACc2gAAAAAAAAAAAA="
+        bs.writeBytes(base64.b64decode(default_meta))
+        
+        f.close()
+
 def readDataFile(fileName):
     '''
     Read a starmade data file (.smd2)
@@ -448,6 +586,82 @@ def readDataFile(fileName):
             print 'Warning: EOF not reached'
     
     return retval
+
+def writeDataFile(fileName, data):
+
+    with open(fileName, 'wb') as f:
+        print 'Writing %s' % fileName
+        
+        bs = binary.BinaryStream(f)
+        
+        bs.writeInt32(data['int_a'])
+        
+        for i in range(0, 4096):
+            bs.writeInt32(-1)
+            bs.writeInt32(0)
+        
+        for i in range(0, 4096):
+            pos = (i % 16, (i / 16) % 16, i / 256)
+            pos = (16 * (pos[0] - 8), 16 * (pos[1] - 8), 16 * (pos[2] - 8))
+            
+            if pos in data['chunk_timestamps']:
+                bs.writeInt64(data['chunk_timestamps'][pos])
+            else:
+                bs.writeInt64(0)
+        
+        index = 0
+        for chunk in data['chunks']:
+            
+            bs.writeInt64(chunk['timestamp'])
+            
+            bs.writeInt32(chunk['pos'][0])
+            bs.writeInt32(chunk['pos'][1])
+            bs.writeInt32(chunk['pos'][2])
+            
+            bs.writeChar(chunk['type'])
+            
+            indata = cStringIO.StringIO()
+            
+            for block in range(0,16*16*16):
+                pos = (block % 16, (block / 16) % 16, block / 256)
+                
+                if pos in chunk['blocks']:
+                    b_data = chunk['blocks'][pos]
+                    
+                    b1 = bits(b_data['id'], 0, 8)
+                    b2 = bits(b_data['id'], 8, 3) | (bits(b_data['hp'], 0, 5) << 3)
+                    b3 = bits(b_data['hp'], 5, 4) | (bits(b_data['orient'] | b_data['active'], 0, 4) << 4)
+                    
+                    indata.write(struct.pack('BBB', b3, b2, b1 ))
+                else:
+                    indata.write('\x00\x00\x00')
+            
+            outdata = zlib.compress(indata.getvalue())
+            outlen = len(outdata)
+            
+            bs.writeInt32(outlen)
+            bs.writeBytes(outdata)
+            bs.writeBytes('\x00' * (5120-25-outlen))
+            
+            data['chunk_index'][chunk['pos']]['id'] = index
+            data['chunk_index'][chunk['pos']]['len'] = outlen + 25
+            
+            index += 1
+        
+        # Rewrite chunk_index
+        bs.base_stream.seek(4)
+        for i in range(0, 4096):
+            pos = (i % 16, (i / 16) % 16, i / 256)
+            pos = (16 * (pos[0] - 8), 16 * (pos[1] - 8), 16 * (pos[2] - 8))
+            
+            if pos in data['chunk_index']:
+                bs.writeInt32(data['chunk_index'][pos]['id'])
+                bs.writeInt32(data['chunk_index'][pos]['len'])
+            else:
+                bs.writeInt32(-1)
+                bs.writeInt32(0)
+        
+        f.close()
 
 def readEntityFile(fileName):
     retval = {}
