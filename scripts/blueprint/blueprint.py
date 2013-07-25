@@ -4,6 +4,7 @@ import pprint
 import struct
 import time
 import zlib
+import re
 
 from sets import Set
 
@@ -373,6 +374,9 @@ def readDataFile(fileName):
         
         retval['filelen'] = flen
         numChunks = (flen-4-32768-32768)/5120
+        
+        m = re.search('(\d)\.(\d)\.(\d)\.smd2$', f.name)
+        retval['pos'] = ( int(m.group(1)), int(m.group(2)), int(m.group(3)) )
         
         bs = binary.BinaryStream(f)
         
