@@ -34,11 +34,12 @@ def readBlueprint(dirName):
     data['header'] = readHeaderFile('%s/header.smbph' % dirName)
     data['logic'] = readLogicFile('%s/logic.smbpl' % dirName)
     data['meta'] = readMetaFile('%s/meta.smbpm' % dirName)
+    data['datas'] = {}
     
     dataDir = '%s/DATA' % dirName
     
     for df in os.listdir(dataDir):
-        data[df] = readDataFile('%s/%s' % (dataDir, df))
+        data['datas'][df] = readDataFile('%s/%s' % (dataDir, df))
     
     return data
 
