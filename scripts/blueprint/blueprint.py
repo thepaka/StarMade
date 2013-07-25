@@ -406,9 +406,10 @@ def readDataFile(fileName):
             if timestamp:
                 pos = (i % 16, (i / 16) % 16, i / 256)
                 pos = (16 * (pos[0] - 8), 16 * (pos[1] - 8), 16 * (pos[2] - 8))
-            
-                retval['chunk_timestamps'][pos] = timestamp
-        
+                
+                if pos in retval['chunk_index']:
+                    retval['chunk_timestamps'][pos] = timestamp
+                
         retval['chunks'] = []
         for chunk in range(0, numChunks):
             chunkDict = {}
@@ -420,6 +421,9 @@ def readDataFile(fileName):
             
             indata = bs.readBytes(5120-25)
             outdata = zlib.decompress(indata)
+            
+            if not chunkDict['pos'] in retval['chunk_index']:
+                continue
 
             chunkDict['blocks'] = {}
             for block in range(0,16*16*16):
