@@ -438,7 +438,7 @@ def readDataFile(fileName):
                         'id': blockId,
                         'hp': bits(data, 11, 9),
                         'active': bits(data, 20, 1),
-                        'orient': bits(data, 21, 3),
+                        'orient': bits(data, 20, 4),
                     }
             
             retval['chunks'].append(chunkDict)
