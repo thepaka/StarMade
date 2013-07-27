@@ -47,23 +47,23 @@ class Blocks:
         y_size = self.length * self.width
         z_size = self.width
 
-        _x = pos[0] - 8 - self.orig[0]
-        _y = pos[1] - 8 - self.orig[1]
-        _z = pos[2] - 8 - self.orig[2]
+        x = pos[0] - 8 - self.orig[0]
+        y = pos[1] - 8 - self.orig[1]
+        z = pos[2] - 8 - self.orig[2]
 
-        return int(_x + _z * z_size + _y * y_size )
+        return int( x + z * z_size + y * y_size )
 
     def index_to_pos(self, index):
 
         y_size = self.length * self.width
         z_size = self.width
 
-        _y = int( index / y_size )
-        _z = int( ( index - _y * y_size ) / z_size )
-        _x = int( ( index - _y * y_size ) -  _z * z_size )
+        y = int( index / y_size )
+        z = int( ( index - y * y_size ) / z_size )
+        x = int( ( index - y * y_size ) - z * z_size )
 
-        x = _x + 8 + self.orig[0]
-        y = _y + 8 + self.orig[1]
-        z = _z + 8 + self.orig[2]
+        x += 8 + self.orig[0]
+        y += 8 + self.orig[1]
+        z += 8 + self.orig[2]
 
         return ( x, y, z )
