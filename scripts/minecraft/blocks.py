@@ -6,10 +6,10 @@
 
 class Blocks:
 
-    def __init__(self, width, height, length, orig):
+    def __init__(self, width, height, length, orig=(0,0,0)):
 
         print "Blocks : width=%d height=%d length=%d " % ( width, height, length )
-        print "       : orig_x=%d orig_y=%d orig_z=%d " % ( orig[0], orig[1], orig[2])
+        print "       : orig_x=%d orig_y=%d orig_z=%d " % orig
 
         self.height = height
         self.length = length
