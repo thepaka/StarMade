@@ -4,19 +4,33 @@ Ressources
  * NBT modules comes from https://github.com/twoolie/NBT/tree/master/nbt
  * blueprint module comes from https://github.com/StarMade/StarMade/tree/master/scripts/blueprint
 
+
 Files
 """""
 
 bp2schem.py
    Convert a Starmade blueprint to a Minecraft NBT Schematic
 
+schem2bp.py
+   Convert a Minecraft NBT Schematic to a Starmade blueprint
+
 resolver.py:
-   Resolve Starmade blocks to Mineraft blocks (and vice versa)
+   Resolve Starmade blocks to Minecraft blocks (and vice versa)
+
 
 How to use
 """"""""""
 
-   # Convert a blueprint to a schematic
-   python2.7 bp2schem.py ~/StarMade/blueprints/Isanth-VI
-   mv Isanth-VI.schematic ~/.minecraft/mods/spc/schematics/
+ - Convert a blueprint to a schematic -
+
+ % python2.7 bp2schem.py ~/StarMade/blueprints/Isanth-VI
+ % mv Isanth-VI.schematic ~/.minecraft/mods/spc/schematics/
+
+ - Convert a schematic to a blueprint -
+
+The schematic must contains a block of BedRock (id 7).
+It will be the ShipCore in the blueprint.
+
+ % python2.7 schem2bp.py ~/.minecraft/mods/spc/schematics/MyAwesomeShip.schematic
+ % mv MyAwesomeShip ~/StarMade/blueprints/
 
