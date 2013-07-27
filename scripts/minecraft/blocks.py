@@ -42,6 +42,34 @@ class Blocks:
 
         return id, data
 
+    def set_orig_on_blockid(self, block_id):
+
+        index = -1
+        for i in range(0, len(self.ids)):
+            if self.ids[i] == block_id:
+                if index == -1:
+                    index = i
+                else:
+                    print "Error. Untable to find the ship core block"
+                    print "Minecraft block ID %d is not uniq" % block_id
+                    exit(1)
+        if index == -1:
+            print "Error. Unable to find the ship core block"
+            print "Minecraft block ID %d not found" % block_id
+            exit(1)
+
+        y_size = self.length * self.width
+        z_size = self.width
+
+        y = int( index / y_size )
+        z = int( ( index - y * y_size ) / z_size )
+        x = int( ( index - y * y_size ) - z * z_size )
+
+        self.orig = ( -x, -y, -z )
+
+        print "Minecraft block ID %d found at index %d" % (block_id, index)
+        print "New Orig : orig_x=%d orig_y=%d orig_z=%d " % self.orig
+
     def pos_to_index(self, pos):
 
         y_size = self.length * self.width
