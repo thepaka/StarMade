@@ -22,7 +22,7 @@ from blueprint import blueprint
 from blueprint import binary
 
 
-def main(dirName):
+def bp2schem(dirName):
 
     # Load blueprint
 
@@ -104,4 +104,4 @@ if __name__ == '__main__':
     if not os.path.isdir(dirName):
        raise Exception('%s is not a directory' % dirName)
 
-    main(dirName)
+    bp2schem(dirName)
