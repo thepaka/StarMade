@@ -6,25 +6,25 @@
 
 class Blocks:
 
-    def __init__(self, width, height, length, orig_x, orig_y, orig_z):
+    def __init__(self, width, height, length, orig):
 
         print "Blocks : width=%d height=%d length=%d " % ( width, height, length )
-        print "       : orig_x=%d orig_y=%d orig_z=%d " % ( orig_x, orig_y, orig_z )
+        print "       : orig_x=%d orig_y=%d orig_z=%d " % ( orig[0], orig[1], orig[2])
 
         self.height = height
         self.length = length
         self.width = width
 
-        self.orig = [ orig_x, orig_y, orig_z ]
+        self.orig = orig
 
         self.ids = bytearray( width * height * length )
         self.datas = bytearray( width * height * length )
 
-    def add(self, x, y, z, id, data=0):
+    def add(self, pos, id, data=0):
 
-        _x = x - 8 - self.orig[0]
-        _y = y - 8 - self.orig[1]
-        _z = z - 8 - self.orig[2]
+        _x = pos[0] - 8 - self.orig[0]
+        _y = pos[1] - 8 - self.orig[1]
+        _z = pos[2] - 8 - self.orig[2]
 
         index = int(_x + _z * self.width + _y * ( self.length * self.width ))
 

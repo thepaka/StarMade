@@ -34,10 +34,11 @@ def main(dirName):
     height = int( abs(bp['header']['bounds_a'][1] - bp['header']['bounds_b'][1] ) - 1 )
     length = int( abs(bp['header']['bounds_a'][2] - bp['header']['bounds_b'][2] ) - 1 )
 
-    b = Blocks(width, height, length,
-               bp['header']['bounds_a'][0] + 1,
-               bp['header']['bounds_a'][1] + 1,
-               bp['header']['bounds_a'][2] + 1)
+    orig = ( bp['header']['bounds_a'][0] + 1,
+             bp['header']['bounds_a'][1] + 1,
+             bp['header']['bounds_a'][2] + 1)
+
+    b = Blocks(width, height, length, orig)
 
     for data in bp['datas'].values():
         chunks = data['chunks']
@@ -58,10 +59,10 @@ def main(dirName):
             print "Chunk pos : x=%d y=%d z=%d" % ( x_off, y_off, z_off )
 
             for pos, data in chunk['blocks'].items():
-
                 block_info = resolver.starmade_to_minecraft( data['id'], data['orient'] )
-                b.add(pos[0] + x_off, pos[1] + y_off , pos[2] + z_off,
-                      block_info[0], block_info[1])
+                block_pos = (pos[0] + x_off, pos[1] + y_off , pos[2] + z_off)
+
+                b.add(block_pos, block_info[0], block_info[1])
 
     # Create NBT
 
