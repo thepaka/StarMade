@@ -464,9 +464,7 @@ def writeMetaFile(fileName, data):
         '''
         
         import base64
-        default_meta = "AAAAAAMAAAAAAgAADQAJY29udGFpbmVyDQATY29udHJvbGxlclN0cnVjdHVyZQANAAhzaGlwTWFu"\
-                       "MA0ACHdlcENvbnRyAA0ACHdlcENvbnRyAA0ACHdlcENvbnRyAA0ACHdlcENvbnRyAAAGAAJwd0DT"\
-                       "iAAAAAAABgACc2gAAAAAAAAAAAA="
+        default_meta = "AAAAAAE="
         bs.writeBytes(base64.b64decode(default_meta))
         
         f.close()
