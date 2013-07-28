@@ -13,6 +13,7 @@ def minecraft_to_starmade( mc_id, mc_data ):
 
    sm_orientation = 0
    sm_hp = 0
+   sm_active = 0
 
    # Ship core
    if mc_id == 7:
@@ -32,7 +33,7 @@ def minecraft_to_starmade( mc_id, mc_data ):
       sm_id = 5
       sm_hp = 100
 
-   return ( sm_id, sm_orientation, sm_hp )
+   return ( sm_id, sm_hp, sm_orientation, sm_active )
 
 def starmade_orientation( sm_orientation, sm_type = WEDGE ):
 

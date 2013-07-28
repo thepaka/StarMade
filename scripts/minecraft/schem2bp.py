@@ -69,13 +69,13 @@ def schem2bp(fileName):
             y_off = chunk_pos[1]
             z_off = chunk_pos[2]
 
-            id, orient, hp = resolver.minecraft_to_starmade( id, data )
+            id, hp, active, orient = resolver.minecraft_to_starmade( id, data )
 
             block_pos = (pos[0] - x_off, pos[1] - y_off, pos[2] - z_off)
             datas[data_pos][chunk_pos][block_pos] = {
                 'id': id,
                 'hp': hp,
-                'active': 0,
+                'active': active,
                 'orient': orient
             }
 
