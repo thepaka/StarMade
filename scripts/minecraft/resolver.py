@@ -4,6 +4,8 @@
 @version: v0.1
 """
 
+import db
+
 from itertools import chain
 
 WEDGE  = 0
@@ -12,25 +14,30 @@ CORNER = 1
 def minecraft_to_starmade( mc_id, mc_data ):
 
    sm_orientation = 0
-   sm_hp = 0
    sm_active = 0
 
    # Ship core
    if mc_id == 7:
 
       sm_id = 1
-      sm_hp = 500
 
    # HULL
    elif mc_id == 42:
 
       sm_id = 5
-      sm_hp = 100
 
    # DEFAULT
    else:
 
       sm_id = 5
+
+
+   # Set Hitpoints
+   if sm_id in db.hitpoints:
+      sm_hp = db.hitpoints[sm_id]
+   elif sm_id == 0:
+      sm_hp = 0
+   else:
       sm_hp = 100
 
    return ( sm_id, sm_hp, sm_orientation, sm_active )
