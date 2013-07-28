@@ -11,6 +11,28 @@ from itertools import chain
 WEDGE  = 0
 CORNER = 1
 
+def minecraft_orientation( mc_data ):
+
+   up = ((mc_data & 0x4) >> 2)
+   if up:
+      retval = 0x8
+   else:
+      retval = 0x0
+
+   direction = mc_data & 0x3
+   if direction == 0x2:        # N
+      retval |= 0x0
+   elif direction == up:       # W
+      retval |= 0x2
+   elif direction == 0x3:      # S
+      retval |= 0x4
+   elif direction == (not up): # E
+      retval |= 0x6
+   else:
+      raise ValueError
+
+   return retval
+
 def minecraft_to_starmade( mc_id, mc_data ):
 
    sm_orientation = 0
@@ -22,14 +44,47 @@ def minecraft_to_starmade( mc_id, mc_data ):
       sm_id = 1
 
    # HULL
-   elif mc_id == 42:
+   elif mc_id in chain(range(42, 44+1) ):
 
       sm_id = 5
+
+   elif mc_id == 98:
+
+      sm_id = 75
+
+   # HULL WEDGES
+   elif mc_id in [ 53, 67, 108, 109, 114, 128, 134, 135, 136, 156 ]:
+
+      sm_id = 293
+
+      try:
+         sm_orientation = minecraft_orientation( mc_data )
+      except ValueError:
+         sm_id = 5
+
+   # DOOR
+   elif mc_id in [ 64, 71, 96 ]:
+
+      sm_id = 122
+      #sm_active = 1
+
+   # LIGHTS
+   elif mc_id in [ 89, 123, 124 ]:
+
+      sm_id = 55
+
+      if mc_id == 123:
+         sm_active = 1
+
+   # GLASSES
+   elif mc_id in [ 20, 102 ]:
+
+      sm_id = 63
 
    # DEFAULT
    else:
 
-      sm_id = 5
+      sm_id = 0
 
 
    # Set Hitpoints
@@ -119,11 +174,6 @@ def starmade_to_minecraft( sm_id, sm_orientation ):
 
    # LIGHTS
    elif sm_id in chain([ 55, 62 ], range(282, 285+1)):
-
-      #if not sm_orientation:
-      #   mc_id = 123
-      #else:
-      #   mc_id = 124
 
       mc_id = 89
 
