@@ -58,12 +58,10 @@ class Blocks:
             print "Minecraft block ID %d not found" % block_id
             exit(1)
 
-        y_size = self.length * self.width
-        z_size = self.width
 
-        y = int( index / y_size )
-        z = int( ( index - y * y_size ) / z_size )
-        x = int( ( index - y * y_size ) - z * z_size )
+        x = index % self.width
+        y = index / (self.length * self.width)
+        z = (index / self.width ) % self.length
 
         self.orig = ( -x, -y, -z )
 
@@ -72,23 +70,17 @@ class Blocks:
 
     def pos_to_index(self, pos):
 
-        y_size = self.length * self.width
-        z_size = self.width
-
         x = pos[0] - 8 - self.orig[0]
         y = pos[1] - 8 - self.orig[1]
         z = pos[2] - 8 - self.orig[2]
 
-        return int( x + z * z_size + y * y_size )
+        return x + y * self.length * self.width + z * self.width
 
     def index_to_pos(self, index):
 
-        y_size = self.length * self.width
-        z_size = self.width
-
-        y = int( index / y_size )
-        z = int( ( index - y * y_size ) / z_size )
-        x = int( ( index - y * y_size ) - z * z_size )
+        x = index % self.width
+        y = index / (self.length * self.width)
+        z = (index / self.width ) % self.length
 
         x += 8 + self.orig[0]
         y += 8 + self.orig[1]
