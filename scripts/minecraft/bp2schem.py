@@ -50,12 +50,6 @@ def bp2schem(dirName):
             y_off = chunk['pos'][1]
             z_off = chunk['pos'][2]
 
-            if not (x_off - data_pos[0] * 256,
-                    y_off - data_pos[1] * 256,
-                    z_off - data_pos[2] * 256 ) in chunk_index:
-               print "Ignored Chunk pos : x=%d y=%d z=%d" % ( x_off, y_off, z_off )
-               continue
-
             print "Chunk pos : x=%d y=%d z=%d" % ( x_off, y_off, z_off )
 
             for pos, data in chunk['blocks'].items():
