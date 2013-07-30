@@ -559,7 +559,9 @@ def readDataFile(fileName):
             indata = bs.readBytes(5120-25)
             outdata = zlib.decompress(indata)
             
-            if not chunkDict['pos'] in retval['chunk_index']:
+            if not (chunkDict['pos'][0] - retval['pos'][0] * 256,
+                    chunkDict['pos'][1] - retval['pos'][1] * 256,
+                    chunkDict['pos'][2] - retval['pos'][2] * 256) in retval['chunk_index']:
                 continue
 
             chunkDict['blocks'] = {}
