@@ -45,7 +45,7 @@ class Blocks:
     def set_orig_on_blockid(self, block_id):
 
         index = -1
-        for i in range(0, len(self.ids)):
+        for i in xrange(0, len(self.ids)):
             if self.ids[i] == block_id:
                 if index == -1:
                     index = i

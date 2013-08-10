@@ -47,7 +47,7 @@ def schem2bp(fileName):
 
     datas = {}
     blocks_counter = {}
-    for i in range(0, len(b.datas)):
+    for i in xrange(0, len(b.datas)):
         pos = b.index_to_pos(i)
         id, data = b.get(pos)
 

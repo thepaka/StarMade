@@ -130,7 +130,7 @@ def readHeaderFile(fileName):
         blockTableLen = bs.readInt32()
         retval['blocks'] = {}
         
-        for i in range(0, blockTableLen):
+        for i in xrange(0, blockTableLen):
             index = bs.readInt16()
             qty = bs.readInt32()
             
@@ -225,7 +225,7 @@ def readLogicFile(fileName):
         numControls = bs.readInt32()
         retval['controllers'] = []
         
-        for i in range(0, numControls):
+        for i in xrange(0, numControls):
             dict = {}
         
             dict['pos'] = (bs.readInt16(), bs.readInt16(), bs.readInt16())
@@ -233,13 +233,13 @@ def readLogicFile(fileName):
             numGroups = bs.readInt32()
             dict['q'] = {}
             
-            for j in range(0, numGroups):
+            for j in xrange(0, numGroups):
                 tag = bs.readInt16()
                 numBlocks = bs.readInt32()
                 
                 dict['q'][tag] = []
                 
-                for ii in range(0, numBlocks):
+                for ii in xrange(0, numBlocks):
                     dict['q'][tag].append((bs.readInt16(), bs.readInt16(), bs.readInt16()))
             
             retval['controllers'].append(dict)
@@ -316,7 +316,7 @@ def parseEntity(bs):
         elif type == TAG_BYTEARRAY:
             data = []
             len = bs.readInt32()
-            for i in range(0, len):
+            for i in xrange(0, len):
                 data.append(bs.readChar())
         elif type == TAG_STRING:
             data = bs.readString()
@@ -331,7 +331,7 @@ def parseEntity(bs):
             next = bs.readChar()
             len = bs.readInt32()
             
-            for i in range(0, len):
+            for i in xrange(0, len):
                 data.append(parseTagData(bs, next))
             
         elif type == TAG_STRUCT:
@@ -440,7 +440,7 @@ def readMetaFile(fileName):
             
             retval['docked'] = []
             
-            for i in range(0, numDocked):
+            for i in xrange(0, numDocked):
                 name = bs.readString()
                 q = (bs.readInt32(), bs.readInt32(), bs.readInt32())
                 a = (bs.readFloat(), bs.readFloat(), bs.readFloat())
@@ -481,7 +481,7 @@ def writeMetaFile(fileName, data):
             numDocked = len(data['docked'])
             bs.writeInt32(numDocked)
             
-            for i in range(0, numDocked):
+            for i in xrange(0, numDocked):
                 d = data['docked'][i]
                 
                 bs.writeString = d['name']
@@ -562,7 +562,7 @@ def readDataFile(fileName):
         retval['chunk_timestamps'] = {}
         
         # First 32KB area
-        for i in range(0, 4096):
+        for i in xrange(0, 4096):
             chunkId = bs.readInt32()
             chunkLen = bs.readInt32()
             
@@ -576,7 +576,7 @@ def readDataFile(fileName):
                 }
                 
         # Second 32KB area
-        for i in range(0, 4096):
+        for i in xrange(0, 4096):
             timestamp = bs.readInt64()
             
             if timestamp:
@@ -587,7 +587,7 @@ def readDataFile(fileName):
                     retval['chunk_timestamps'][pos] = timestamp
                 
         retval['chunks'] = []
-        for chunk in range(0, numChunks):
+        for chunk in xrange(0, numChunks):
             chunkDict = {}
         
             chunkDict['timestamp'] = bs.readInt64()
@@ -605,7 +605,7 @@ def readDataFile(fileName):
                continue
 
             chunkDict['blocks'] = {}
-            for block in range(0,16*16*16):
+            for block in xrange(0,16*16*16):
                 idx = block*3
                 data = struct.unpack('>i', '\x00' + outdata[idx:idx+3])[0]
                 blockId = bits(data, 0, 11)
@@ -636,11 +636,11 @@ def writeDataFile(fileName, data):
         
         bs.writeInt32(data['int_a'])
         
-        for i in range(0, 4096):
+        for i in xrange(0, 4096):
             bs.writeInt32(-1)
             bs.writeInt32(0)
         
-        for i in range(0, 4096):
+        for i in xrange(0, 4096):
             pos = (i % 16, (i / 16) % 16, i / 256)
             pos = (16 * (pos[0] - 8), 16 * (pos[1] - 8), 16 * (pos[2] - 8))
             
@@ -662,7 +662,7 @@ def writeDataFile(fileName, data):
             
             indata = cStringIO.StringIO()
             
-            for block in range(0,16*16*16):
+            for block in xrange(0,16*16*16):
                 pos = (block % 16, (block / 16) % 16, block / 256)
                 
                 if pos in chunk['blocks']:
@@ -692,7 +692,7 @@ def writeDataFile(fileName, data):
         
         # Rewrite chunk_index
         bs.base_stream.seek(4)
-        for i in range(0, 4096):
+        for i in xrange(0, 4096):
             pos = (i % 16, (i / 16) % 16, i / 256)
             pos = (16 * (pos[0] - 8), 16 * (pos[1] - 8), 16 * (pos[2] - 8))
             
