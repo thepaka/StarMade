@@ -26,16 +26,16 @@ def indexed_pos( chunk_pos, data_pos ):
     '''
     Get the indexed chunk position from a chunk and a data position
     '''
-
+    
     c = chunk_pos
     d = data_pos
-
+    
     pos = (
         2 * c[0] * ( d[0] >= 0 ) - c[0] - 256 * abs( d[0] ),
         2 * c[1] * ( d[1] >= 0 ) - c[1] - 256 * abs( d[1] ),
         2 * c[2] * ( d[2] >= 0 ) - c[2] - 256 * abs( d[2] ),
     )
-
+    
     return pos
 
 
@@ -79,6 +79,9 @@ def writeBlueprint(dirName, data):
 
 def printBlueprint(dirName):
     pprint.pprint(readBlueprint(dirName))
+
+def printEntity(fileName):
+    pprint.pprint(readEntityFile(fileName))
     
 def testWrites(dirName):
 
@@ -293,7 +296,7 @@ def parseEntity(bs):
     TAG_BYTE3 = 0xB
     TAG_LIST = 0xC
     TAG_STRUCT = 0xD
-    # TAG_SERIALIZABLE = 0xE
+    TAG_SERIALIZABLE = 0xE
     
     def parseTagData(bs, type):
       
@@ -343,11 +346,31 @@ def parseEntity(bs):
                     })
                 else:
                     break
+        elif type == TAG_SERIALIZABLE:
+            data = []
+            
+            len = bs.readInt32()
+            byte_a = bs.readByte()
+            
+            if len != 0:
+                print 'ERROR: TAG_SERIALIZABLE'
+                print 'Reading serialized data is not implemented'
+                exit(1)
+            
+            if byte_a != '\x00':
+                print 'ERROR: TAG_SERIALIZABLE'
+                print 'Expected value for byte_a : \\x00, Got : \\x%02X' % ord(byte_a)
+                exit(1)
+            
+            data.append({
+                'len' : len,
+            })
+            
         else:
             print 'WARNING: Unrecognized tag type %d' % type
-
+        
         return data
-
+    
     retval = {}
     
     retval['short_a'] = bs.readInt16()
