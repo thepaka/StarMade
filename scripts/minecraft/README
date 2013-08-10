@@ -34,3 +34,7 @@ It will be the ShipCore in the blueprint.
  % python2.7 schem2bp.py ~/.minecraft/mods/spc/schematics/MyAwesomeShip.schematic
  % mv MyAwesomeShip ~/StarMade/blueprints/
 
+Your schematic can be expanded (x2) by adding the option 'expand'
+
+ % python2.7 schem2bp.py ~/.minecraft/mods/spc/schematics/MyAwesomeShip.schematic expand
+

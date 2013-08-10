@@ -44,18 +44,18 @@ def minecraft_to_starmade( mc_id, mc_data ):
       sm_id = 1
 
    # HULL
-   elif mc_id in chain(range(42, 44+1) ):
+   elif mc_id in chain(range(42, 43+1) ):
 
       sm_id = 5
 
-   elif mc_id == 98:
+   elif mc_id in [ 44, 98 ]:
 
       sm_id = 75
 
    # HULL WEDGES
    elif mc_id in [ 53, 67, 108, 109, 114, 128, 134, 135, 136, 156 ]:
 
-      sm_id = 293
+      sm_id = 296
 
       try:
          sm_orientation = minecraft_orientation( mc_data )

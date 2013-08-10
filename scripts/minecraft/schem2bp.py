@@ -10,6 +10,7 @@ import sys
 import time
 
 import resolver
+import expander
 import blocks
 from blocks import Blocks
 
@@ -23,7 +24,33 @@ from blueprint import blueprint
 from blueprint import binary
 
 
-def schem2bp(fileName):
+
+def expand(b, size):
+
+    if size == 0:
+        return
+
+    print "Expanding , factor %d" % size
+    ex = expander.Expander()
+    b.expand(size)
+
+    for z in xrange(0, b.length, size):
+        for y in xrange(0, b.height, size):
+            for x in xrange(0, b.width, size):
+                pos = (x, y, z)
+                id, data = b.get( pos, True )
+
+                ex.init(size, id, data)
+
+                for z2 in xrange(0, size):
+                    for y2 in xrange(0, size):
+                        for x2 in xrange(0, size):
+                            id2, data2 = ex.get( (x2, y2, z2 ) )
+                            pos2 = ( x+x2, y+y2, z+z2 )
+                            b.add( pos2, id2, data2, True )
+
+
+def schem2bp(fileName, opt_expand = False):
 
     # Load NBT
 
@@ -38,6 +65,10 @@ def schem2bp(fileName):
     b = Blocks(width, height, length)
     b.datas = nbtfile['Data'].value
     b.ids = nbtfile['Blocks'].value
+
+    # Expand
+    if opt_expand:
+        expand(b, 2)
 
     # The ship core will be the bedrock block (id 7)
     b.set_orig_on_blockid(7)
@@ -142,8 +173,15 @@ def schem2bp(fileName):
 
 if __name__ == '__main__':
 
+    argc = len(sys.argv)
+
     fileName = sys.argv[1]
     if not os.path.exists(fileName):
        raise Exception('%s is not an existing file' % fileName)
 
-    schem2bp(fileName)
+    opt_expand = False
+    if argc == 3:
+        if sys.argv[2] == "expand":
+            opt_expand = True
+    
+    schem2bp(fileName, opt_expand)
