@@ -121,11 +121,14 @@ def schem2bp(fileName):
 
         ci = 0
         for chunk in datas[data]:
-            bp_d['chunk_index'][chunk] = {
+
+            pos_index = blueprint.indexed_pos( chunk, data )
+
+            bp_d['chunk_index'][pos_index] = {
                 'id' : ci,
                 'len' : 0
             }
-            bp_d['chunk_timestamps'][chunk] = int(time.time()* 1000)
+            bp_d['chunk_timestamps'][pos_index] = int(time.time()* 1000)
             bp_d['chunks'].append({
                 'blocks': datas[data][chunk],
                 'pos': chunk,

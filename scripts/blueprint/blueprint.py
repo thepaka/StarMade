@@ -4,7 +4,6 @@ import pprint
 import struct
 import time
 import zlib
-import re
 import cStringIO
 
 from sets import Set
@@ -22,6 +21,23 @@ def bits(x, start, len):
     x = x >> start
     x = x & (2 ** len - 1)
     return x
+
+def indexed_pos( chunk_pos, data_pos ):
+    '''
+    Get the indexed chunk position from a chunk and a data position
+    '''
+
+    c = chunk_pos
+    d = data_pos
+
+    pos = (
+        2 * c[0] * ( d[0] >= 0 ) - c[0] - 256 * abs( d[0] ),
+        2 * c[1] * ( d[1] >= 0 ) - c[1] - 256 * abs( d[1] ),
+        2 * c[2] * ( d[2] >= 0 ) - c[2] - 256 * abs( d[2] ),
+    )
+
+    return pos
+
 
 def readBlueprint(dirName):
     '''
@@ -512,8 +528,8 @@ def readDataFile(fileName):
         retval['filelen'] = flen
         numChunks = (flen-4-32768-32768)/5120
         
-        m = re.search('(\d)\.(\d)\.(\d)\.smd2$', f.name)
-        retval['pos'] = ( int(m.group(1)), int(m.group(2)), int(m.group(3)) )
+        s_name = f.name.rsplit('.',4)
+        retval['pos'] = ( int(s_name[1]), int(s_name[2]), int(s_name[3]) )
         
         bs = binary.BinaryStream(f)
         
@@ -559,10 +575,11 @@ def readDataFile(fileName):
             indata = bs.readBytes(5120-25)
             outdata = zlib.decompress(indata)
             
-            if not (chunkDict['pos'][0] - retval['pos'][0] * 256,
-                    chunkDict['pos'][1] - retval['pos'][1] * 256,
-                    chunkDict['pos'][2] - retval['pos'][2] * 256) in retval['chunk_index']:
-                continue
+            pos_index = indexed_pos( chunk['pos'], data['pos'] )
+
+            if not pos_index in retval['chunk_index']:
+               print "Ignored pos_index ( %d, %d, %d ) " % pos_index
+               continue
 
             chunkDict['blocks'] = {}
             for block in range(0,16*16*16):
@@ -643,8 +660,10 @@ def writeDataFile(fileName, data):
             bs.writeBytes(outdata)
             bs.writeBytes('\x00' * (5120-25-outlen))
             
-            data['chunk_index'][chunk['pos']]['id'] = index
-            data['chunk_index'][chunk['pos']]['len'] = outlen + 25
+            pos_index = indexed_pos( chunk['pos'], data['pos'] )
+
+            data['chunk_index'][pos_index]['id'] = index
+            data['chunk_index'][pos_index]['len'] = outlen + 25
             
             index += 1
         
