@@ -54,9 +54,9 @@ def schem2bp(fileName):
         if id:
             chunk_pos = ( pos[0] / 16 * 16,  pos[1] / 16 * 16,  pos[2] / 16 * 16 )
 
-            data_pos = ( (chunk_pos[0] + 128) / 256 * 256,
-                         (chunk_pos[1] + 128) / 256 * 256,
-                         (chunk_pos[2] + 128) / 256 * 256)
+            data_pos = ( (chunk_pos[0] + 128) / 255 ,
+                         (chunk_pos[1] + 128) / 255 ,
+                         (chunk_pos[2] + 128) / 255 )
 
             if not data_pos in datas:
                 print "New data (%2d, %2d, %2d)" % data_pos

@@ -598,7 +598,7 @@ def readDataFile(fileName):
             indata = bs.readBytes(5120-25)
             outdata = zlib.decompress(indata)
             
-            pos_index = indexed_pos( chunk['pos'], data['pos'] )
+            pos_index = indexed_pos( chunkDict['pos'], retval['pos'] )
 
             if not pos_index in retval['chunk_index']:
                print "Ignored pos_index ( %d, %d, %d ) " % pos_index
